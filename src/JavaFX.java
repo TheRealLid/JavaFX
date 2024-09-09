@@ -71,7 +71,9 @@ public class JavaFX extends Application {
         
         clearCheckedItems.setOnAction(event -> {
         	List<Pair<String, CheckBox>> itemsToRemove = new ArrayList<>();
-            for (Pair<String, CheckBox> pair : taskCheckBoxes) {
+        	
+
+            for (Pair<String, CheckBox> pair : taskCheckBoxes) { 
                 if (pair.getValue().isSelected()) {
                     itemsToRemove.add(pair);
                 }
@@ -88,7 +90,7 @@ public class JavaFX extends Application {
         root.getChildren().addAll(input, addButton, listView, clearCheckedItems);
 
         Scene scene = new Scene(root, 300, 250);
-
+        scene.getStylesheets().add(getClass().getResource("/resources/style.css").toExternalForm());
 
         primaryStage.setScene(scene);
         primaryStage.show();
