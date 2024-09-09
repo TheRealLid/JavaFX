@@ -1,6 +1,8 @@
 import javafx.scene.control.TextField;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javafx.application.Application;
@@ -13,6 +15,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.ListCell;
 
@@ -33,7 +36,7 @@ public class JavaFX extends Application {
         
         
         // Stores items and checkBoxes for easier deletion alter
-        Map<String, CheckBox> taskCheckBoxes = new HashMap<>();
+        List<Pair<String, CheckBox>> taskCheckBoxes = new ArrayList<>(); 
         
         // stores the list of tasks to be displayed
         ObservableList<String> tasks = FXCollections.observableArrayList();
@@ -48,7 +51,7 @@ public class JavaFX extends Application {
                     setGraphic(null); 
                 } else {
                     CheckBox checkBox = new CheckBox(item);
-                    taskCheckBoxes.put(item, checkBox);
+                    taskCheckBoxes.add(new Pair<>(item, checkBox));
                     setGraphic(checkBox);  
                 }
             }
@@ -67,7 +70,17 @@ public class JavaFX extends Application {
         });
         
         clearCheckedItems.setOnAction(event -> {
-        		tasks.removeIf(task -> taskCheckBoxes.get(task).isSelected());
+        	List<Pair<String, CheckBox>> itemsToRemove = new ArrayList<>();
+            for (Pair<String, CheckBox> pair : taskCheckBoxes) {
+                if (pair.getValue().isSelected()) {
+                    itemsToRemove.add(pair);
+                }
+            }
+            // Remove the checked tasks from both taskCheckBoxes and tasks
+            for (Pair<String, CheckBox> pair : itemsToRemove) {
+                taskCheckBoxes.remove(pair);
+                tasks.remove(pair.getKey());
+            }
         });
 
         VBox root = new VBox(10);
