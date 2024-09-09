@@ -71,9 +71,14 @@ public class JavaFX extends Application {
         });
     	List<Pair<String, CheckBox>> itemsToRemove = new ArrayList<>();
         clearCheckedItems.setOnAction(event -> {
-        	itemsToRemove.clear();
-        	
 
+            for (Pair<String, CheckBox> pair : taskCheckBoxes) { 
+                if (pair.getValue().isSelected()) {
+                	itemsToRemove.clear();
+                	break;
+                }
+            }
+        	
             for (Pair<String, CheckBox> pair : taskCheckBoxes) { 
                 if (pair.getValue().isSelected()) {
                     itemsToRemove.add(pair);
@@ -91,7 +96,6 @@ public class JavaFX extends Application {
         	if(!itemsToRemove.isEmpty()) {
         		for (Pair<String, CheckBox> pair : itemsToRemove) {
         			System.out.println(pair.getKey());
-        			taskCheckBoxes.add(pair);
         			tasks.add(pair.getKey());
         		}
         		itemsToRemove.clear();
