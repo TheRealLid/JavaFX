@@ -1,4 +1,8 @@
 import javafx.scene.control.TextField;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,6 +28,13 @@ public class JavaFX extends Application {
         // Create a button that the user will click to submit their input
         Button addButton = new Button("Add Task");       
         
+        // Creates a button that the user will click to remove all check marked items
+        Button clearCheckedItems = new Button("Clear Checked Tasks");
+        
+        
+        // Stores items and checkBoxes for easier deletion alter
+        Map<String, CheckBox> taskCheckBoxes = new HashMap<>();
+        
         // stores the list of tasks to be displayed
         ObservableList<String> tasks = FXCollections.observableArrayList();
         ListView<String> listView = new ListView<>(tasks);
@@ -33,10 +44,11 @@ public class JavaFX extends Application {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
+                if (empty || item == null) { // prevents empty items from being created.
                     setGraphic(null); 
                 } else {
-                    CheckBox checkBox = new CheckBox(item); 
+                    CheckBox checkBox = new CheckBox(item);
+                    taskCheckBoxes.put(item, checkBox);
                     setGraphic(checkBox);  
                 }
             }
@@ -53,11 +65,14 @@ public class JavaFX extends Application {
             	input.clear();
             }
         });
-
+        
+        clearCheckedItems.setOnAction(event -> {
+        		tasks.removeIf(task -> taskCheckBoxes.get(task).isSelected());
+        });
 
         VBox root = new VBox(10);
 
-        root.getChildren().addAll(input, addButton, listView);
+        root.getChildren().addAll(input, addButton, listView, clearCheckedItems);
 
         Scene scene = new Scene(root, 300, 250);
 
