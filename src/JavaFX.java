@@ -5,10 +5,13 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.layout.VBox;
+import javafx.scene.control.ListCell;
+
 
 public class JavaFX extends Application {
 
@@ -24,6 +27,23 @@ public class JavaFX extends Application {
         // stores the list of tasks to be displayed
         ObservableList<String> tasks = FXCollections.observableArrayList();
         ListView<String> listView = new ListView<>(tasks);
+        
+        //adds a checkbox next to each listview item
+        listView.setCellFactory(lv -> new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null); 
+                } else {
+                    CheckBox checkBox = new CheckBox(item); 
+                    setGraphic(checkBox);  
+                }
+            }
+        });
+
+
+        
         
         // Defines the buttons action upon click
         addButton.setOnAction(event -> {
