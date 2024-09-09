@@ -1,19 +1,19 @@
 import javafx.scene.control.TextField;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.StackPane;
+
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.layout.VBox;
