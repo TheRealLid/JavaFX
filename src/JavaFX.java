@@ -34,6 +34,8 @@ public class JavaFX extends Application {
         // Creates a button that the user will click to remove all check marked items
         Button clearCheckedItems = new Button("Clear Checked Tasks");
         
+        //undo button for the most recent delete action
+        Button undoLastDelete = new Button("Undo");
         
         // Stores items and checkBoxes for easier deletion alter
         List<Pair<String, CheckBox>> taskCheckBoxes = new ArrayList<>(); 
@@ -59,7 +61,6 @@ public class JavaFX extends Application {
 
 
         
-        
         // Defines the buttons action upon click
         addButton.setOnAction(event -> {
             String task = input.getText(); // Get the text from the input field
@@ -68,9 +69,9 @@ public class JavaFX extends Application {
             	input.clear();
             }
         });
-        
+    	List<Pair<String, CheckBox>> itemsToRemove = new ArrayList<>();
         clearCheckedItems.setOnAction(event -> {
-        	List<Pair<String, CheckBox>> itemsToRemove = new ArrayList<>();
+        	itemsToRemove.clear();
         	
 
             for (Pair<String, CheckBox> pair : taskCheckBoxes) { 
@@ -85,9 +86,21 @@ public class JavaFX extends Application {
             }
         });
 
+        //Restores the most recent delete action
+        undoLastDelete.setOnAction(event ->{
+        	if(!itemsToRemove.isEmpty()) {
+        		for (Pair<String, CheckBox> pair : itemsToRemove) {
+        			System.out.println(pair.getKey());
+        			taskCheckBoxes.add(pair);
+        			tasks.add(pair.getKey());
+        		}
+        		itemsToRemove.clear();
+        	}
+        });
+        
         VBox root = new VBox(10);
 
-        root.getChildren().addAll(input, addButton, listView, clearCheckedItems);
+        root.getChildren().addAll(input, addButton, listView, clearCheckedItems, undoLastDelete);
 
         Scene scene = new Scene(root, 300, 250);
         scene.getStylesheets().add(getClass().getResource("/resources/style.css").toExternalForm());
