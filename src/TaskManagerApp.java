@@ -64,17 +64,11 @@ public class TaskManagerApp extends Application {
         		}else {
         			textField.setText(getItem().getText());
         		}
+        		
+        		textField.setOnAction(event -> commitEdit(getItem()));
         		textField.setOnKeyPressed(event->{
-        			switch (event.getCode()) {
-        			case KeyCode.ENTER:
-        				System.out.println("Attempting to commit Edits");
-        				commitEdit(getItem());
-        				break;
-        			case KeyCode.ESCAPE:
+        			if(event.getCode() == KeyCode.ESCAPE) {
         				cancelEdit();
-        				break;
-        			default:
-        				break;
         			}
         		});
         		setGraphic(textField); //Turns the text into an editable textfield
@@ -93,7 +87,7 @@ public class TaskManagerApp extends Application {
         	public void cancelEdit() {
         	    super.cancelEdit();
         	    setGraphic(null);
-        	    updateItem(getItem(), false); //sets the value back to what it was before edits.
+        	    updateItem(getItem(), false); 
         	}
         	
             @Override
@@ -131,6 +125,8 @@ public class TaskManagerApp extends Application {
             	input.clear();
             }
         });
+        
+        input.setOnAction(event -> addButton.fire()); //allows the user to press enter instead of pressing the AddButton button.
         
     	List<Pair<TaskItem, CheckBox>> itemsToRemove = new ArrayList<>();
         clearCheckedItems.setOnAction(event -> {
