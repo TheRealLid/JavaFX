@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 //TODO Fix bug. If you click a check mark then click on the text of another item it will remove the check mark
 // This causes a problem where in some cases deleting and undoing will add back the item several times.
 public class TaskManagerApp extends Application {
@@ -38,33 +39,35 @@ public class TaskManagerApp extends Application {
         //undo button for the most recent delete action
         Button undoLastDelete = new Button("Undo");
         
+        
+        //edit existing task
+        Button edit = new Button("Edit");
         // Stores items and checkBoxes for easier deletion alter
-        List<Pair<Text, CheckBox>> taskCheckBoxes = new ArrayList<>(); 
+        List<Pair<TaskItem, CheckBox>> taskCheckBoxes = new ArrayList<>(); 
         
         // stores the list of tasks to be displayed
-        ObservableList<String> tasks = FXCollections.observableArrayList();
-        ListView<String> listView = new ListView<>(tasks);
+        ObservableList<TaskItem> tasks = FXCollections.observableArrayList();
+        ListView<TaskItem> listView = new ListView<>(tasks);
         
         //adds a checkbox next to each listview item
         //listens for changes to the checkbox states and strikes the text when checked
-        listView.setCellFactory(lv -> new ListCell<String>() {
+        listView.setCellFactory(lv -> new ListCell<TaskItem>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) { // prevents empty items from being created.
+            protected void updateItem(TaskItem task, boolean empty) {
+                super.updateItem(task, empty);
+                if (empty || task == null) { // prevents empty items from being created.
                     setGraphic(null); 
                 } else {
-                	Text text = new Text(item); //assign the actual text to the Text class instance.
+                	Text text = new Text(task.getText()); //assign the actual text to the Text class instance.
                     CheckBox checkBox = new CheckBox();
-	                checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
-	                    if (isSelected) {
-	                        text.setStrikethrough(true); // Apply strikethrough
-	                    } else {
-	                        text.setStrikethrough(false); // Remove strikethrough
-	                    }
-	                });
+                    
+                    checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+                        task.setIsCompleted(isSelected);
+                        text.setStrikethrough(isSelected); // Apply/Remove strikethrough
+                    });
+
 	                // Add the pair to the taskCheckBoxes list
-	                taskCheckBoxes.add(new Pair<>(text, checkBox));
+	                taskCheckBoxes.add(new Pair<>(task, checkBox));
 	                HBox hbox = new HBox(10); // 10 is spacing between CheckBox and Text
 	                hbox.getChildren().addAll(checkBox, text);
 
@@ -77,47 +80,56 @@ public class TaskManagerApp extends Application {
         
         // Defines the buttons action upon click
         addButton.setOnAction(event -> {
-            String task = input.getText(); // Get the text from the input field
-            if(!task.isEmpty()) {
-            	tasks.add(task);
+            String taskText = input.getText(); // Get the text from the input field
+            if(!taskText.isEmpty()) {
+            	TaskItem newTask = new TaskItem(taskText);
+            	tasks.add(newTask);
             	input.clear();
             }
         });
-    	List<Pair<Text, CheckBox>> itemsToRemove = new ArrayList<>();
+        
+    	List<Pair<TaskItem, CheckBox>> itemsToRemove = new ArrayList<>();
         clearCheckedItems.setOnAction(event -> {
         	//Only erases items if there is atleast one checked item. This prevents clearing the history so undo will work better
-            for (Pair<Text, CheckBox> pair : taskCheckBoxes) { 
+            for (Pair<TaskItem, CheckBox> pair : taskCheckBoxes) { 
                 if (pair.getValue().isSelected()) {
                 	itemsToRemove.clear();
                 	break;
                 }
             }
         	
-            for (Pair<Text, CheckBox> pair : taskCheckBoxes) { 
+            for (Pair<TaskItem, CheckBox> pair : taskCheckBoxes) { 
                 if (pair.getValue().isSelected()) {
                     itemsToRemove.add(pair);
                 }
             }
             // Remove the checked tasks from both taskCheckBoxes and tasks
-            for (Pair<Text, CheckBox> pair : itemsToRemove) {
+            for (Pair<TaskItem, CheckBox> pair : itemsToRemove) {
                 taskCheckBoxes.remove(pair);
-                tasks.remove(pair.getKey().getText());
+                tasks.remove(pair.getKey());
             }
         });
 
         //Restores the most recent delete action
         undoLastDelete.setOnAction(event ->{
         	if(!itemsToRemove.isEmpty()) {
-        		for (Pair<Text, CheckBox> pair : itemsToRemove) {
-        			tasks.add(pair.getKey().getText());
+        		for (Pair<TaskItem, CheckBox> pair : itemsToRemove) {
+        			tasks.add(pair.getKey());
         		}
         		itemsToRemove.clear();
         	}
         });
         
+        edit.setOnAction(event -> {
+        	TaskItem selectedTask = listView.getSelectionModel().getSelectedItem();
+        	System.out.println(selectedTask.getText());
+        	int index = listView.getSelectionModel().getSelectedIndex();
+        	
+        });
+        
         VBox root = new VBox(10);
 
-        root.getChildren().addAll(input, addButton, listView, clearCheckedItems, undoLastDelete);
+        root.getChildren().addAll(input, addButton, listView, clearCheckedItems, undoLastDelete, edit);
 
         Scene scene = new Scene(root, 300, 250);
         scene.getStylesheets().add(getClass().getResource("/resources/style.css").toExternalForm());

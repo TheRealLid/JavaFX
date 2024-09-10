@@ -1,10 +1,10 @@
 
-public class Task {
+public class TaskItem {
 	private String text;
 	private Boolean isCompleted;
 	private int priority;
 	
-	public Task(String text) {
+	public TaskItem(String text) {
 		this.text = text;
 		this.isCompleted = false;
 	}
