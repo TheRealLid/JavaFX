@@ -1,28 +1,24 @@
-import javafx.scene.control.TextField;
-
-import java.util.ArrayList;
-
-import java.util.List;
-
-
+//JavaFX imports
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import javafx.scene.control.ListCell;
 
+//Util Imports
+import java.util.ArrayList;
+import java.util.List;
 
-public class JavaFX extends Application {
+public class TaskManagerApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
