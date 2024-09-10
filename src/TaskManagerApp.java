@@ -48,10 +48,38 @@ public class TaskManagerApp extends Application {
         // stores the list of tasks to be displayed
         ObservableList<TaskItem> tasks = FXCollections.observableArrayList();
         ListView<TaskItem> listView = new ListView<>(tasks);
+        listView.setEditable(true);
         
         //adds a checkbox next to each listview item
         //listens for changes to the checkbox states and strikes the text when checked
         listView.setCellFactory(lv -> new ListCell<TaskItem>() {
+        	private TextField textField;
+        	
+        	@Override
+        	public void startEdit() {
+        		super.startEdit();
+        		if(textField == null) {
+        			textField = new TextField(getItem().getText());
+        		}else {
+        			textField.setText(getItem().getText());
+        		}
+        		
+        		textField.setOnAction(event -> commitEdit(getItem()));
+        		
+        		setGraphic(textField); //Turns the text into an editable textfield
+        		textField.selectAll(); //Selects all text
+        	}
+        	
+        	
+        	@Override
+        	public void commitEdit(TaskItem updatedTaskItem) {
+        		super.commitEdit(updatedTaskItem);
+        		updatedTaskItem.setText(textField.getText());// updates the TaskItems internal text string
+        		setGraphic(null); // Switches back to display mode *****
+        		updateItem(updatedTaskItem, false); //update
+        	}
+        	
+        	
             @Override
             protected void updateItem(TaskItem task, boolean empty) {
                 super.updateItem(task, empty);
@@ -121,9 +149,11 @@ public class TaskManagerApp extends Application {
         });
         
         edit.setOnAction(event -> {
-        	TaskItem selectedTask = listView.getSelectionModel().getSelectedItem();
-        	System.out.println(selectedTask.getText());
-        	int index = listView.getSelectionModel().getSelectedIndex();
+
+        	int selectedIndex = listView.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0) { // Ensure something is selected
+                listView.edit(selectedIndex); // Start editing the selected cell
+            }
         	
         });
         
