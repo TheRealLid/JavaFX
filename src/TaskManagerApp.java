@@ -21,8 +21,7 @@ import java.util.List;
 
 
 
-//TODO Fix bug. If you click a check mark then click on the text of another item it will remove the check mark
-// This causes a problem where in some cases deleting and undoing will add back the item several times.
+
 public class TaskManagerApp extends Application {
 
     @Override
