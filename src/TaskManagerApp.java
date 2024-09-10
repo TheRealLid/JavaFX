@@ -8,6 +8,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -63,9 +64,19 @@ public class TaskManagerApp extends Application {
         		}else {
         			textField.setText(getItem().getText());
         		}
-        		
-        		textField.setOnAction(event -> commitEdit(getItem()));
-        		
+        		textField.setOnKeyPressed(event->{
+        			switch (event.getCode()) {
+        			case KeyCode.ENTER:
+        				System.out.println("Attempting to commit Edits");
+        				commitEdit(getItem());
+        				break;
+        			case KeyCode.ESCAPE:
+        				cancelEdit();
+        				break;
+        			default:
+        				break;
+        			}
+        		});
         		setGraphic(textField); //Turns the text into an editable textfield
         		textField.selectAll(); //Selects all text
         	}
@@ -78,7 +89,12 @@ public class TaskManagerApp extends Application {
         		setGraphic(null); // Switches back to display mode *****
         		updateItem(updatedTaskItem, false); //update
         	}
-        	
+        	@Override
+        	public void cancelEdit() {
+        	    super.cancelEdit();
+        	    setGraphic(null);
+        	    updateItem(getItem(), false); //sets the value back to what it was before edits.
+        	}
         	
             @Override
             protected void updateItem(TaskItem task, boolean empty) {
