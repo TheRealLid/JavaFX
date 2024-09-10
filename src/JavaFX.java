@@ -17,6 +17,8 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 import javafx.scene.control.ListCell;
 
 
@@ -38,13 +40,14 @@ public class JavaFX extends Application {
         Button undoLastDelete = new Button("Undo");
         
         // Stores items and checkBoxes for easier deletion alter
-        List<Pair<String, CheckBox>> taskCheckBoxes = new ArrayList<>(); 
+        List<Pair<Text, CheckBox>> taskCheckBoxes = new ArrayList<>(); 
         
         // stores the list of tasks to be displayed
         ObservableList<String> tasks = FXCollections.observableArrayList();
         ListView<String> listView = new ListView<>(tasks);
         
         //adds a checkbox next to each listview item
+        //listens for changes to the checkbox states and strikes the text when checked
         listView.setCellFactory(lv -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -52,9 +55,21 @@ public class JavaFX extends Application {
                 if (empty || item == null) { // prevents empty items from being created.
                     setGraphic(null); 
                 } else {
-                    CheckBox checkBox = new CheckBox(item);
-                    taskCheckBoxes.add(new Pair<>(item, checkBox));
-                    setGraphic(checkBox);  
+                	Text text = new Text(item); //assign the actual text to the Text class instance.
+                    CheckBox checkBox = new CheckBox();
+	                checkBox.selectedProperty().addListener((obs, wasSelected, isSelected) -> {
+	                    if (isSelected) {
+	                        text.setStrikethrough(true); // Apply strikethrough
+	                    } else {
+	                        text.setStrikethrough(false); // Remove strikethrough
+	                    }
+	                });
+	                // Add the pair to the taskCheckBoxes list
+	                taskCheckBoxes.add(new Pair<>(text, checkBox));
+	                HBox hbox = new HBox(10); // 10 is spacing between CheckBox and Text
+	                hbox.getChildren().addAll(checkBox, text);
+
+	                setGraphic(hbox); 
                 }
             }
         });
@@ -69,34 +84,33 @@ public class JavaFX extends Application {
             	input.clear();
             }
         });
-    	List<Pair<String, CheckBox>> itemsToRemove = new ArrayList<>();
+    	List<Pair<Text, CheckBox>> itemsToRemove = new ArrayList<>();
         clearCheckedItems.setOnAction(event -> {
-
-            for (Pair<String, CheckBox> pair : taskCheckBoxes) { 
+        	//Only erases items if there is atleast one checked item. This prevents clearing the history so undo will work better
+            for (Pair<Text, CheckBox> pair : taskCheckBoxes) { 
                 if (pair.getValue().isSelected()) {
                 	itemsToRemove.clear();
                 	break;
                 }
             }
         	
-            for (Pair<String, CheckBox> pair : taskCheckBoxes) { 
+            for (Pair<Text, CheckBox> pair : taskCheckBoxes) { 
                 if (pair.getValue().isSelected()) {
                     itemsToRemove.add(pair);
                 }
             }
             // Remove the checked tasks from both taskCheckBoxes and tasks
-            for (Pair<String, CheckBox> pair : itemsToRemove) {
+            for (Pair<Text, CheckBox> pair : itemsToRemove) {
                 taskCheckBoxes.remove(pair);
-                tasks.remove(pair.getKey());
+                tasks.remove(pair.getKey().getText());
             }
         });
 
         //Restores the most recent delete action
         undoLastDelete.setOnAction(event ->{
         	if(!itemsToRemove.isEmpty()) {
-        		for (Pair<String, CheckBox> pair : itemsToRemove) {
-        			System.out.println(pair.getKey());
-        			tasks.add(pair.getKey());
+        		for (Pair<Text, CheckBox> pair : itemsToRemove) {
+        			tasks.add(pair.getKey().getText());
         		}
         		itemsToRemove.clear();
         	}
