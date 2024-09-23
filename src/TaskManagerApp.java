@@ -174,7 +174,7 @@ public class TaskManagerApp extends Application {
 
         Scene scene = new Scene(root, 300, 250);
         scene.getStylesheets().add(getClass().getResource("/resources/style.css").toExternalForm());
-
+        primaryStage.setTitle("TODO LIST");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
